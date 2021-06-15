@@ -11,9 +11,23 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        
+        let booksAPI = BooksAPI()
+        let task = BackendService.shared.createTask(api: booksAPI) { data, _, error in
+            if let error = error {
+                print(error)
+            } else if let data = data {
+                do {
+                    let data = try BooksAPI.mapData(data: data)
+                    print(data)
+                } catch(let e) {
+                    print(e)
+                }
+            }
+        }
+        
+        task.resume()
     }
-
 
 }
 
