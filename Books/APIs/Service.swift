@@ -1,5 +1,5 @@
 //
-//  Common.swift
+//  Service.swift
 //  Books
 //
 //  Created by Joe Ciou on 2021/6/15.
@@ -7,41 +7,7 @@
 
 import Foundation
 
-class BackendService {
-    static let shared = BackendService(environment: .production)
-    
-    let environment: BackendEnvironment
-    
-    init(environment: BackendEnvironment) {
-        self.environment = environment
-    }
-    
-    func createTask(api: API, completedHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionTask {
-        let url = URL(string: environment.domain + api.path)!
-        var request = URLRequest(url: url)
-        request.httpMethod = api.httpMethod.rawValue
-        request.allHTTPHeaderFields = api.headers
-        request.httpBody = api.body
-        
-        return URLSession.shared.dataTask(with: request, completionHandler: completedHandler)
-    }
-}
-
-enum BackendEnvironment {
-    case production
-    case staging
-    
-    var domain: String {
-        switch self {
-        case .production:
-            return Constants.Backend.productionDomain
-        case .staging:
-            return Constants.Backend.stagingDomain
-        }
-    }
-}
-
-protocol API {
+protocol EndPoint {
     var httpMethod: HTTPMethod { get }
     var path: String { get }
     var parameters: [String: Any]? { get }
@@ -55,6 +21,47 @@ enum HTTPMethod: String {
     case put
     case patch
     case delete
+}
+
+class BackendService: NSObject {
+    static let shared = BackendService()
+    
+    let domain: String = Bundle.main.infoDictionary!["backend_url"] as! String
+    
+    private let configuration: URLSessionConfiguration = {
+        let configuration = URLSessionConfiguration.default
+        // Improve devices are disconnected temporarily from the  internet
+        // configuration.waitsForConnectivity = true
+        // configuration.timeoutIntervalForRequest =
+        
+        // Limit the networing access by
+        // configuration.allowsCellularAccess
+        // configuration.allowsExpensiveNetworkAccess
+        // configuration.allowsConstrainedNetworkAccess
+        
+        // For downloading task in background
+        // configuration.sessionSendsLaunchEvents = true
+            // For time-insensitive tasks
+            // configuration.isDiscretionary = true
+        
+        return configuration
+    }()
+    
+    private lazy var session = URLSession(configuration: configuration, delegate: self, delegateQueue: nil)
+    
+    func createTask(api: EndPoint, completedHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask {
+        let url = URL(string: domain + api.path)!
+        var request = URLRequest(url: url)
+        request.httpMethod = api.httpMethod.rawValue
+        request.allHTTPHeaderFields = api.headers
+        request.httpBody = api.body
+        
+        return session.dataTask(with: request, completionHandler: completedHandler)
+    }
+}
+
+extension BackendService: URLSessionDataDelegate {
+    
 }
 
 

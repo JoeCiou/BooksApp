@@ -62,5 +62,7 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>backend_url</key>
+	<string>${BACKEND_URL}</string>
 </dict>
 </plist>

@@ -1,0 +1,11 @@
+//
+//  Debug.xcconfig
+//  Books
+//
+//  Created by Joe Ciou on 2021/6/19.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+BACKEND_URL = https:/$()/900a8233-a68f-4f9a-b6cf-b7e5be1ffbc4.mock.pstmn.io

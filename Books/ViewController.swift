@@ -12,13 +12,20 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let booksAPI = BooksAPI()
-        let task = BackendService.shared.createTask(api: booksAPI) { data, _, error in
+        let booksAPI = BooksEndPoint()
+        let task = BackendService.shared.createTask(api: booksAPI) { data, response, error in
             if let error = error {
                 print(error)
-            } else if let data = data {
+                return
+            }
+            if let httpResponse = response as? HTTPURLResponse,
+                  !(200...299).contains(httpResponse.statusCode) {
+                print(httpResponse.statusCode)
+                return
+            }
+            if let data = data {
                 do {
-                    let data = try BooksAPI.mapData(data: data)
+                    let data = try BooksEndPoint.mapData(data: data)
                     print(data)
                 } catch(let e) {
                     print(e)

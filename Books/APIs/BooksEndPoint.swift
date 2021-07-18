@@ -1,5 +1,5 @@
 //
-//  BooksAPI.swift
+//  BooksEndPoint.swift
 //  Books
 //
 //  Created by Joe Ciou on 2021/6/15.
@@ -11,7 +11,7 @@ struct BooksAPIResponse: Decodable {
     let books: [Book]
 }
 
-class BooksAPI: API {
+class BooksEndPoint: EndPoint {
     let httpMethod: HTTPMethod = .get
     
     var path: String {
